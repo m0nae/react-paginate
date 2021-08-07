@@ -4,8 +4,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PageView from './PageView';
 import BreakView from './BreakView';
+import StyledBreakView from './StyledBreakView';
 
+function customComponentIsRequired(props, propName, componentName, prop) {
+  if (props[prop] && props[propName] !== PropTypes.element) {
+    console.error(`A ${propName} component is required`);
+  }
+}
 export default class PaginationBoxView extends Component {
+
   static propTypes = {
     pageCount: PropTypes.number.isRequired,
     pageRangeDisplayed: PropTypes.number.isRequired,
@@ -32,6 +39,34 @@ export default class PaginationBoxView extends Component {
     breakLinkClassName: PropTypes.string,
     extraAriaContext: PropTypes.string,
     ariaLabelBuilder: PropTypes.func,
+    customPage: PropTypes.element,
+    customPageLink: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    customContainer: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    customPreviousButton: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    customPreviousLink: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    customNextButton: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    customNextLink: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    customPreviousLink: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    styledBreakListOption: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    },
+    styledBreakLink: function(props, propName, componentName) {
+      customComponentIsRequired(arguments, 'customPage')
+    }
   };
 
   static defaultProps = {
@@ -194,10 +229,14 @@ export default class PaginationBoxView extends Component {
       activeClassName,
       activeLinkClassName,
       extraAriaContext,
+      customPage,
+      customPageLink
     } = this.props;
 
     return (
       <PageView
+      customPage={customPage}
+      customPageLink={customPageLink}
         key={index}
         onClick={this.handlePageSelected.bind(null, index)}
         selected={selected === index}
@@ -222,6 +261,8 @@ export default class PaginationBoxView extends Component {
       breakLabel,
       breakClassName,
       breakLinkClassName,
+      styledBreakListOption,
+      styledBreakLink
     } = this.props;
 
     const { selected } = this.state;
@@ -283,17 +324,32 @@ export default class PaginationBoxView extends Component {
         // we check if the last item of the current "items" array
         // is a break element. If not, we add a break element, else,
         // we do nothing (because we don't want to display the page).
-        if (breakLabel && items[items.length - 1] !== breakView) {
-          breakView = (
-            <BreakView
-              key={index}
-              breakLabel={breakLabel}
-              breakClassName={breakClassName}
-              breakLinkClassName={breakLinkClassName}
-              onClick={this.handleBreakClick.bind(null, index)}
-            />
-          );
-          items.push(breakView);
+        if (styledBreakListOption && styledBreakLink) {
+          if (breakLabel && items[items.length - 1] !== breakView) {
+            breakView = (
+              <StyledBreakView
+                key={index}
+                styledBreakListOption={styledBreakListOption}
+                styledBreakLink={styledBreakLink}
+                breakLabel={breakLabel}
+                onClick={this.handleBreakClick.bind(null, index)}
+              />
+            );
+            items.push(breakView);
+          }
+        } else {
+          if (breakLabel && items[items.length - 1] !== breakView) {
+            breakView = (
+              <BreakView
+                key={index}
+                breakLabel={breakLabel}
+                breakClassName={breakClassName}
+                breakLinkClassName={breakLinkClassName}
+                onClick={this.handleBreakClick.bind(null, index)}
+              />
+            );
+            items.push(breakView);
+          }
         }
       }
     }
@@ -312,7 +368,18 @@ export default class PaginationBoxView extends Component {
       previousLabel,
       nextLinkClassName,
       nextLabel,
+      customContainer,
+      customPreviousButton,
+      customPreviousLink,
+      customNextButton,
+      customNextLink
     } = this.props;
+
+    let CustomContainer = customContainer;
+    let CustomPreviousButton = customPreviousButton;
+    let CustomPreviousLink = customPreviousLink;
+    let CustomNextButton = customNextButton;
+    let CustomNextLink = customNextLink;
 
     const { selected } = this.state;
 
@@ -326,6 +393,38 @@ export default class PaginationBoxView extends Component {
     const nextAriaDisabled = selected === pageCount - 1 ? 'true' : 'false';
 
     return (
+      customContainer ? 
+      <CustomContainer>
+        <CustomPreviousButton>
+          <CustomPreviousLink
+            onClick={this.handlePreviousPage}
+            href={this.hrefBuilder(selected - 1)}
+            tabIndex="0"
+            role="button"
+            onKeyPress={this.handlePreviousPage}
+            aria-disabled={previousAriaDisabled}
+          >
+            {previousLabel}
+          </CustomPreviousLink>
+        </CustomPreviousButton>
+
+        {this.pagination()}
+
+        <CustomNextButton>
+          <CustomNextLink
+            onClick={this.handleNextPage}
+            className={nextLinkClassName}
+            href={this.hrefBuilder(selected + 1)}
+            tabIndex="0"
+            role="button"
+            onKeyPress={this.handleNextPage}
+            aria-disabled={nextAriaDisabled}
+          >
+            {nextLabel}
+          </CustomNextLink>
+        </CustomNextButton>
+      </CustomContainer>
+      :
       <ul className={containerClassName}>
         <li className={previousClasses}>
           <a

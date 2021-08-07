@@ -4,6 +4,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const PageView = props => {
+  let CustomPage = props.customPage;
+  let CustomPageLink = props.customPageLink;
+
   let pageClassName = props.pageClassName;
   let pageLinkClassName = props.pageLinkClassName;
 
@@ -38,6 +41,21 @@ const PageView = props => {
   }
 
   return (
+    props.customPage ? 
+    <CustomPage>
+      <CustomPageLink
+        onClick={onClick}
+        role="button"
+        href={href}
+        tabIndex="0"
+        aria-label={ariaLabel}
+        aria-current={ariaCurrent}
+        onKeyPress={onClick}
+      >
+        {props.page}
+      </CustomPageLink>
+    </CustomPage> 
+    :
     <li className={pageClassName}>
       <a
         onClick={onClick}
@@ -56,6 +74,8 @@ const PageView = props => {
 };
 
 PageView.propTypes = {
+  customPage: PropTypes.element,
+  customPageLink: PropTypes.element,
   onClick: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
   pageClassName: PropTypes.string,
