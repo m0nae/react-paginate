@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _PaginationBoxView$pr;
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -22,13 +24,25 @@ var _BreakView = require('./BreakView');
 
 var _BreakView2 = _interopRequireDefault(_BreakView);
 
+var _StyledBreakView = require('./StyledBreakView');
+
+var _StyledBreakView2 = _interopRequireDefault(_StyledBreakView);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function customComponentIsRequired(props, propName, componentName, prop) {
+  if (props[prop] && props[propName] !== _propTypes2.default.element) {
+    console.error('A ' + propName + ' component is required');
+  }
+}
 
 var PaginationBoxView = function (_Component) {
   _inherits(PaginationBoxView, _Component);
@@ -92,7 +106,9 @@ var PaginationBoxView = function (_Component) {
           marginPagesDisplayed = _this$props.marginPagesDisplayed,
           breakLabel = _this$props.breakLabel,
           breakClassName = _this$props.breakClassName,
-          breakLinkClassName = _this$props.breakLinkClassName;
+          breakLinkClassName = _this$props.breakLinkClassName,
+          styledBreakListOption = _this$props.styledBreakListOption,
+          styledBreakLink = _this$props.styledBreakLink;
       var selected = _this.state.selected;
 
 
@@ -155,15 +171,28 @@ var PaginationBoxView = function (_Component) {
           // we check if the last item of the current "items" array
           // is a break element. If not, we add a break element, else,
           // we do nothing (because we don't want to display the page).
-          if (breakLabel && items[items.length - 1] !== breakView) {
-            breakView = _react2.default.createElement(_BreakView2.default, {
-              key: _index,
-              breakLabel: breakLabel,
-              breakClassName: breakClassName,
-              breakLinkClassName: breakLinkClassName,
-              onClick: _this.handleBreakClick.bind(null, _index)
-            });
-            items.push(breakView);
+          if (styledBreakListOption && styledBreakLink) {
+            if (breakLabel && items[items.length - 1] !== breakView) {
+              breakView = _react2.default.createElement(_StyledBreakView2.default, {
+                key: _index,
+                styledBreakListOption: styledBreakListOption,
+                styledBreakLink: styledBreakLink,
+                breakLabel: breakLabel,
+                onClick: _this.handleBreakClick.bind(null, _index)
+              });
+              items.push(breakView);
+            }
+          } else {
+            if (breakLabel && items[items.length - 1] !== breakView) {
+              breakView = _react2.default.createElement(_BreakView2.default, {
+                key: _index,
+                breakLabel: breakLabel,
+                breakClassName: breakClassName,
+                breakLinkClassName: breakLinkClassName,
+                onClick: _this.handleBreakClick.bind(null, _index)
+              });
+              items.push(breakView);
+            }
           }
         }
       }
@@ -266,10 +295,14 @@ var PaginationBoxView = function (_Component) {
           pageLinkClassName = _props4.pageLinkClassName,
           activeClassName = _props4.activeClassName,
           activeLinkClassName = _props4.activeLinkClassName,
-          extraAriaContext = _props4.extraAriaContext;
+          extraAriaContext = _props4.extraAriaContext,
+          customPage = _props4.customPage,
+          customPageLink = _props4.customPageLink;
 
 
       return _react2.default.createElement(_PageView2.default, {
+        customPage: customPage,
+        customPageLink: customPageLink,
         key: index,
         onClick: this.handlePageSelected.bind(null, index),
         selected: selected === index,
@@ -295,7 +328,20 @@ var PaginationBoxView = function (_Component) {
           previousLinkClassName = _props5.previousLinkClassName,
           previousLabel = _props5.previousLabel,
           nextLinkClassName = _props5.nextLinkClassName,
-          nextLabel = _props5.nextLabel;
+          nextLabel = _props5.nextLabel,
+          customContainer = _props5.customContainer,
+          customPreviousButton = _props5.customPreviousButton,
+          customPreviousLink = _props5.customPreviousLink,
+          customNextButton = _props5.customNextButton,
+          customNextLink = _props5.customNextLink;
+
+
+      var CustomContainer = customContainer;
+      var CustomPreviousButton = customPreviousButton;
+      var CustomPreviousLink = customPreviousLink;
+      var CustomNextButton = customNextButton;
+      var CustomNextLink = customNextLink;
+
       var selected = this.state.selected;
 
 
@@ -305,7 +351,44 @@ var PaginationBoxView = function (_Component) {
       var previousAriaDisabled = selected === 0 ? 'true' : 'false';
       var nextAriaDisabled = selected === pageCount - 1 ? 'true' : 'false';
 
-      return _react2.default.createElement(
+      return customContainer ? _react2.default.createElement(
+        CustomContainer,
+        null,
+        _react2.default.createElement(
+          CustomPreviousButton,
+          null,
+          _react2.default.createElement(
+            CustomPreviousLink,
+            {
+              onClick: this.handlePreviousPage,
+              href: this.hrefBuilder(selected - 1),
+              tabIndex: '0',
+              role: 'button',
+              onKeyPress: this.handlePreviousPage,
+              'aria-disabled': previousAriaDisabled
+            },
+            previousLabel
+          )
+        ),
+        this.pagination(),
+        _react2.default.createElement(
+          CustomNextButton,
+          null,
+          _react2.default.createElement(
+            CustomNextLink,
+            {
+              onClick: this.handleNextPage,
+              className: nextLinkClassName,
+              href: this.hrefBuilder(selected + 1),
+              tabIndex: '0',
+              role: 'button',
+              onKeyPress: this.handleNextPage,
+              'aria-disabled': nextAriaDisabled
+            },
+            nextLabel
+          )
+        )
+      ) : _react2.default.createElement(
         'ul',
         { className: containerClassName },
         _react2.default.createElement(
@@ -350,7 +433,7 @@ var PaginationBoxView = function (_Component) {
   return PaginationBoxView;
 }(_react.Component);
 
-PaginationBoxView.propTypes = {
+PaginationBoxView.propTypes = (_PaginationBoxView$pr = {
   pageCount: _propTypes2.default.number.isRequired,
   pageRangeDisplayed: _propTypes2.default.number.isRequired,
   marginPagesDisplayed: _propTypes2.default.number.isRequired,
@@ -375,8 +458,33 @@ PaginationBoxView.propTypes = {
   breakClassName: _propTypes2.default.string,
   breakLinkClassName: _propTypes2.default.string,
   extraAriaContext: _propTypes2.default.string,
-  ariaLabelBuilder: _propTypes2.default.func
-};
+  ariaLabelBuilder: _propTypes2.default.func,
+  customPage: _propTypes2.default.element,
+  customPageLink: function customPageLink(props, propName, componentName) {
+    customComponentIsRequired(arguments, 'customPage');
+  },
+  customContainer: function customContainer(props, propName, componentName) {
+    customComponentIsRequired(arguments, 'customPage');
+  },
+  customPreviousButton: function customPreviousButton(props, propName, componentName) {
+    customComponentIsRequired(arguments, 'customPage');
+  },
+  customPreviousLink: function customPreviousLink(props, propName, componentName) {
+    customComponentIsRequired(arguments, 'customPage');
+  },
+  customNextButton: function customNextButton(props, propName, componentName) {
+    customComponentIsRequired(arguments, 'customPage');
+  },
+  customNextLink: function customNextLink(props, propName, componentName) {
+    customComponentIsRequired(arguments, 'customPage');
+  }
+}, _defineProperty(_PaginationBoxView$pr, 'customPreviousLink', function customPreviousLink(props, propName, componentName) {
+  customComponentIsRequired(arguments, 'customPage');
+}), _defineProperty(_PaginationBoxView$pr, 'styledBreakListOption', function styledBreakListOption(props, propName, componentName) {
+  customComponentIsRequired(arguments, 'customPage');
+}), _defineProperty(_PaginationBoxView$pr, 'styledBreakLink', function styledBreakLink(props, propName, componentName) {
+  customComponentIsRequired(arguments, 'customPage');
+}), _PaginationBoxView$pr);
 PaginationBoxView.defaultProps = {
   pageCount: 10,
   pageRangeDisplayed: 2,

@@ -15,6 +15,9 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var PageView = function PageView(props) {
+  var CustomPage = props.customPage;
+  var CustomPageLink = props.customPageLink;
+
   var pageClassName = props.pageClassName;
   var pageLinkClassName = props.pageLinkClassName;
 
@@ -43,7 +46,23 @@ var PageView = function PageView(props) {
     }
   }
 
-  return _react2.default.createElement(
+  return props.customPage ? _react2.default.createElement(
+    CustomPage,
+    null,
+    _react2.default.createElement(
+      CustomPageLink,
+      {
+        onClick: onClick,
+        role: 'button',
+        href: href,
+        tabIndex: '0',
+        'aria-label': ariaLabel,
+        'aria-current': ariaCurrent,
+        onKeyPress: onClick
+      },
+      props.page
+    )
+  ) : _react2.default.createElement(
     'li',
     { className: pageClassName },
     _react2.default.createElement(
@@ -64,6 +83,8 @@ var PageView = function PageView(props) {
 };
 
 PageView.propTypes = {
+  customPage: _propTypes2.default.element,
+  customPageLink: _propTypes2.default.element,
   onClick: _propTypes2.default.func.isRequired,
   selected: _propTypes2.default.bool.isRequired,
   pageClassName: _propTypes2.default.string,
